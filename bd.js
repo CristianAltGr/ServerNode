@@ -5,7 +5,7 @@ export const USER_BD = [
         "name": "Cristian Perez",
         "email": "cristian@node.com",
         "password": "test1234",
-        "role": "user",
+        "role": "admin",
         "guid": "ae10c853-dcb5-47ed-8153-6ff00644962b",
         "isActive": false,
         "balance": "$2,223.42",

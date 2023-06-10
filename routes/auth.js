@@ -1,18 +1,18 @@
 import { Router } from "express";
-import { USER_BD } from "../bd";
+import { USER_BD } from "../bd.js";
 
 const authRouter = Router();
 
 //Endpoints public (No autenticado ni autorizado)
-authRouter.get("public", (req, res) => res.send(" Endpoint público!"));
+authRouter.get("/public", (req, res) => res.send(" Endpoint público!"));
 
 //endpoint autenticado
-authRouter.post("autenticado", (req, res) => {
+authRouter.post("/autenticado", (req, res) => {
     const { email, password } = req.body;
 
     if (!email, !password) return res.send(400);
 
-    const user = USER_BD.filter(user => user.email == email && user.password == password);
+    const user = USER_BD.find(user => user.email == email && user.password == password);
 
     if (!user) return res.send(401);
     // codigos de error 401 no autenticado 403 no autorizado
@@ -20,12 +20,12 @@ authRouter.post("autenticado", (req, res) => {
 });
 
 //endpoint autenticado i autorizado
-authRouter.post("autorizado", (req, res) => {
+authRouter.post("/autorizado", (req, res) => {
     const { email, password } = req.body;
 
     if (!email, !password) return res.send(400);
 
-    const user = USER_BD.filter(user => user.email == email && user.password == password);
+    const user = USER_BD.find(user => user.email == email && user.password == password);
 
     if (!user) return res.send(401);
     // codigos de error 401 no autenticado 403 no autorizado
