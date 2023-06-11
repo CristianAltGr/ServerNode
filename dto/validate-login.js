@@ -1,27 +1,44 @@
-const DTO_PROPERY = ['email, password'];
+import { Type } from "@sinclair/typebox";
+import Ajv from "ajv";
+import addFormats from 'ajv-formats';
+import addErrors from 'ajv-errors';
 
-const LoginDTOSchema = {
-    type: 'object',
-    propierties: {
-        email: { type: 'string', format: 'email' },
-        password: { type: 'string' }
+const ajv = new Ajv({ allErrors: true });
+addFormats(ajv, ['email']).addKeyword('kind').addKeyword('modifier');
+addErrors(ajv);
+
+const loginDTOSinclair = Type.Object(
+    {
+        email: Type.String({
+            format: 'email',
+            errorMessage: {
+                type: 'El tipo de email debe ser un string',
+                format: 'email debe contener un email valido'
+            }
+        }),
+        password: Type.String({
+            errorMessage: {
+                type: 'El tipo de password debe ser un string',
+            }
+        })
     },
-    required: ['email', 'password'],
-    additionalPropierties: false
-}
+    {
+        additionalProperties: false,
+        errorMessage: {
+            additionalProperties: 'El formato no és correto el numero de propiedades és erroneo'
+        }
+    }
+);
+//con esta función genera el DTOSCHEMA que hemos hecho anteriormente
+const validate = ajv.compile(loginDTOSinclair);
 
 const validateLoginDTO = (req, res, next) => {
 
-    const loginDto = req.body;
-    if (typeof loginDto !== 'object') res.status(400).send('El formato no és correcto');
+    const isValidate = validate(req.body); // valida el schema esta es una función de ajv i devuelve un boolean
 
-    const bodyPropiertyNames = Object.keys(loginDto);
-    //miramos si tienen el mismo num de elementos i luego comporobamos los mismos
-    const checkPropierty = (bodyPropiertyNames.length === DTO_PROPERY.length) && (bodyPropiertyNames.every((bodyPropiertyName) => DTO_PROPERY.includes(bodyPropiertyName)));
+    if (!isValidate) res.status(400).send(ajv.errorsText(validate.errors, { separator: "\n" }));
 
-    if (!checkPropierty) {
-        res.status(400).send('El body debe contenr las mismas propiedades');
-    }
+    next();
 };
 
 export default validateLoginDTO;
