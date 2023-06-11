@@ -2,12 +2,13 @@ import { Router } from "express";
 import { authUser } from "../helpers/authbymail.js";
 import { SignJWT, jwtVerify } from "jose";
 import { USER_BD } from "../bd.js";
+import validateLoginDTO from "../dto/validate-login.js";
 
 const sessions = []; //array de ssesionses iniciadas
 const auhtTokenRouter = Router();
 const encoder = new TextEncoder(); //creamos este objeto para codificar el string luego
 
-auhtTokenRouter.post("/login", async (req, res) => {
+auhtTokenRouter.post("/login", validateLoginDTO, async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) return res.sendStatus(400);
